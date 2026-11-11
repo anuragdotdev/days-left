@@ -1,10 +1,10 @@
 import { memo } from 'react';
+import type { DayPhase } from '../../services/calendar';
 import { toDateString } from '../../utils/dates';
 
 interface DateCellProps {
   date: Date;
-  isToday: boolean;
-  isPast: boolean;
+  phase: DayPhase;
   isCurrentMonth: boolean;
   isSelected: boolean;
   isFocusable: boolean;
@@ -15,8 +15,7 @@ interface DateCellProps {
 
 export const DateCell = memo(function DateCell({
   date,
-  isToday,
-  isPast,
+  phase,
   isCurrentMonth,
   isSelected,
   isFocusable,
@@ -30,17 +29,25 @@ export const DateCell = memo(function DateCell({
   const base =
     'relative flex h-[21px] w-[21px] items-center justify-center rounded-[3px] text-[11px] leading-none transition-colors hover:bg-surface-2';
 
+  const struck = 'line-through decoration-text-3/70';
+
   // Priority: today (solid neutral) > event (restrained amber) > past (muted,
-  // struck through) > ordinary.
+  // struck through) > beyond the deadline (muted) > ordinary.
   let tone: string;
-  if (isToday) {
+  if (phase === 'today') {
     tone = 'bg-accent font-semibold text-bg';
   } else if (hasEvent) {
-    tone = isPast
-      ? 'bg-amber/15 font-medium text-text-3 line-through decoration-text-3/70'
-      : 'bg-amber/15 font-medium text-amber';
-  } else if (isPast) {
-    tone = 'text-text-3 line-through decoration-text-3/70';
+    if (phase === 'past') {
+      tone = `bg-amber/15 font-medium text-text-3 ${struck}`;
+    } else if (phase === 'beyond') {
+      tone = 'bg-amber/15 font-medium text-text-3';
+    } else {
+      tone = 'bg-amber/15 font-medium text-amber';
+    }
+  } else if (phase === 'past') {
+    tone = `text-text-3 ${struck}`;
+  } else if (phase === 'beyond') {
+    tone = 'text-text-3';
   } else if (isCurrentMonth) {
     tone = 'text-text';
   } else {
@@ -59,15 +66,15 @@ export const DateCell = memo(function DateCell({
       type="button"
       data-date={dateStr}
       aria-label={hasEvent ? `${label}, has events` : label}
-      aria-current={isToday ? 'date' : undefined}
+      aria-current={phase === 'today' ? 'date' : undefined}
       tabIndex={isFocusable ? 0 : -1}
       onClick={(event) => onSelect(date, event.currentTarget)}
       onKeyDown={(event) => onKeyDown(date, event)}
       className={[
         base,
         tone,
-        isSelected && !isToday ? 'outline-1 outline-offset-[-1px] outline-text-3' : '',
-        isSelected && isToday ? 'outline-1 outline-offset-[-1px] outline-text-2' : '',
+        isSelected && phase !== 'today' ? 'outline-1 outline-offset-[-1px] outline-text-3' : '',
+        isSelected && phase === 'today' ? 'outline-1 outline-offset-[-1px] outline-text-2' : '',
       ].join(' ')}
     >
       {day}

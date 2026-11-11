@@ -153,6 +153,67 @@ report.dateStates = await evaluate(`(() => {
   };
 })()`);
 
+// --- deadline window: only days up to the deadline stay white ---
+report.deadlineWindow = await evaluate(`(async () => {
+  const today = document.querySelector('button[aria-current="date"]')?.dataset.date;
+  const read = (date) => {
+    const el = document.querySelector('button[data-date="' + date + '"]');
+    if (!el) return null;
+    const cs = getComputedStyle(el);
+    return { color: cs.color, decoration: cs.textDecorationLine };
+  };
+  const WHITE = 'rgb(255, 255, 255)';
+  const GREY = 'rgb(102, 102, 102)';
+
+  const year = Number(today.slice(0, 4));
+  const month = Number(today.slice(5, 7));
+  const day = Number(today.slice(8, 10));
+  const pad = (n) => String(n).padStart(2, '0');
+  const fmt = (dt) => dt.getFullYear() + '-' + pad(dt.getMonth() + 1) + '-' + pad(dt.getDate());
+  const daysInMonth = new Date(year, month, 0).getDate();
+  const deadline = year + '-' + pad(month) + '-' + pad(daysInMonth);
+  const shift = (n) => fmt(new Date(year, month - 1, day + n));
+  // The first day strictly after the deadline.
+  const afterDeadlineDate = fmt(new Date(year, month, 1));
+
+  // Set the deadline through the Settings UI (the real user path).
+  document.querySelector('button[aria-label="Open settings"]').click();
+  await window.__dl.wait(300);
+  const modal = document.querySelector('[role="dialog"][aria-label="Settings"]');
+  const original = modal.querySelector('#settings-target').value;
+  window.__dl.setInput(modal.querySelector('#settings-target'), deadline);
+  await window.__dl.wait(100);
+  window.__dl.byText(modal, 'Save').click();
+  await window.__dl.wait(600);
+
+  const result = {
+    today,
+    deadline,
+    original,
+    pastDay: read(shift(-1)),
+    inWindowDay: read(shift(1)),
+    deadlineDay: read(deadline),
+    afterDeadline: read(afterDeadlineDate),
+  };
+
+  // Restore the original target.
+  document.querySelector('button[aria-label="Open settings"]').click();
+  await window.__dl.wait(300);
+  const modal2 = document.querySelector('[role="dialog"][aria-label="Settings"]');
+  window.__dl.setInput(modal2.querySelector('#settings-target'), original);
+  await window.__dl.wait(100);
+  window.__dl.byText(modal2, 'Save').click();
+  await window.__dl.wait(500);
+
+  result.expectations = {
+    pastIsGrey: result.pastDay?.color === GREY && result.pastDay?.decoration === 'line-through',
+    inWindowIsWhite: result.inWindowDay?.color === WHITE,
+    deadlineIsWhite: result.deadlineDay?.color === WHITE,
+    afterDeadlineIsGrey: result.afterDeadline?.color === GREY && result.afterDeadline?.decoration === 'none',
+  };
+  return result;
+})()`);
+
 // --- click a date -> popover ---
 report.popover = await evaluate(`(async () => {
   document.querySelector('button[data-date="2026-12-04"]').click();

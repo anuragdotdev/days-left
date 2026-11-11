@@ -251,6 +251,7 @@ export function NewTab() {
                 year={calendarYear}
                 weekStartsOn={data.settings.weekStartsOn}
                 today={today}
+                deadline={data.settings.countdownTarget}
                 selectedDate={selectedDate}
                 eventDates={eventDates}
                 onYearChange={handleYearChange}

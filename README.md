@@ -21,9 +21,12 @@ Clicking a date opens a popover with that date's events.
 | Today | solid white cell, black text |
 | Event date | restrained amber cell |
 | Past date | muted grey with strikethrough |
+| After the deadline | muted grey, no strikethrough |
 | Selected date | subtle outline |
 
-Past dates that contain an event keep their amber marker while staying struck through.
+Days between today and the countdown target stay white; everything after the target
+recedes to plain grey. Past dates that contain an event keep their amber marker while
+staying struck through, and so do events that fall after the deadline.
 
 **Upcoming events** — chronological list of today-and-later events with the day number,
 month abbreviation, title and type. Events can also be created, edited and deleted from
@@ -87,7 +90,7 @@ src/
 │  └─ ui/             Modal, Field
 ├─ hooks/             useAppData, useToday
 ├─ pages/             NewTab
-├─ services/          storage, migrate, countdown
+├─ services/          storage, migrate, countdown, calendar
 ├─ types/             EventItem, TodoItem, Settings, AppData
 └─ utils/             dates, id, transfer
 ```

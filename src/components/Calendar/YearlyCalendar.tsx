@@ -8,6 +8,8 @@ interface YearlyCalendarProps {
   year: number;
   weekStartsOn: WeekStart;
   today: string;
+  /** The countdown target date; days up to and including it are highlighted. */
+  deadline: string;
   selectedDate: string | null;
   eventDates: Set<string>;
   onYearChange: (year: number) => void;
@@ -22,6 +24,7 @@ export function YearlyCalendar({
   year,
   weekStartsOn,
   today,
+  deadline,
   selectedDate,
   eventDates,
   onYearChange,
@@ -91,6 +94,7 @@ export function YearlyCalendar({
             month={month}
             weekStartsOn={weekStartsOn}
             today={today}
+            deadline={deadline}
             selectedDate={selectedDate}
             eventDates={eventDates}
             onSelectDate={onSelectDate}

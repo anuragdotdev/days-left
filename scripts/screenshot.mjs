@@ -91,10 +91,13 @@ async function evaluate(expression) {
 // Seed the sample data shown in the design mockup.
 await evaluate(`(async () => {
   const now = new Date().toISOString();
+  const d = new Date();
+  const pad = (n) => String(n).padStart(2, '0');
+  const today = d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
   const data = {
     version: 1,
     settings: {
-      countdownTarget: '2026-12-31',
+      countdownTarget: '2026-12-15',
       countdownLabel: 'year end',
       weekStartsOn: 'monday',
       theme: 'dark',
@@ -103,12 +106,13 @@ await evaluate(`(async () => {
       { id: 'e1', title: 'Project Presentation', date: '2026-12-04', type: 'presentation', createdAt: now, updatedAt: now },
       { id: 'e2', title: 'ML Assignment', date: '2026-12-10', type: 'assignment', createdAt: now, updatedAt: now },
       { id: 'e3', title: 'DBMS Examination', date: '2026-12-15', type: 'examination', createdAt: now, updatedAt: now },
+      { id: 'e4', title: 'Later Event', date: '2026-12-22', type: 'project', createdAt: now, updatedAt: now },
     ],
     tasks: [
-      { id: 't1', title: 'Solve DSA problems', completed: true, priority: 'high', dueDate: '2026-11-11', createdAt: now, completedAt: now, updatedAt: now },
-      { id: 't2', title: 'Finish ML assignment', completed: false, priority: 'medium', dueDate: '2026-11-11', createdAt: now, updatedAt: now },
-      { id: 't3', title: 'Work on project', completed: false, priority: 'low', dueDate: '2026-11-11', createdAt: now, updatedAt: now },
-      { id: 't4', title: 'Revise DBMS', completed: true, priority: 'high', dueDate: '2026-11-10', createdAt: now, completedAt: now, updatedAt: now },
+      { id: 't1', title: 'Solve DSA problems', completed: true, priority: 'high', dueDate: today, createdAt: now, completedAt: now, updatedAt: now },
+      { id: 't2', title: 'Finish ML assignment', completed: false, priority: 'medium', dueDate: today, createdAt: now, updatedAt: now },
+      { id: 't3', title: 'Work on project', completed: false, priority: 'low', dueDate: today, createdAt: now, updatedAt: now },
+      { id: 't4', title: 'Revise DBMS', completed: true, priority: 'high', dueDate: today, createdAt: now, completedAt: now, updatedAt: now },
     ],
   };
   await chrome.storage.local.set({ 'deadline:data': data });

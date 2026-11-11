@@ -1,6 +1,7 @@
 import { memo, useMemo } from 'react';
 import type { WeekStart } from '../../types';
-import { monthMatrix, monthAbbreviation, weekdayInitials } from '../../utils/dates';
+import { dayPhase } from '../../services/calendar';
+import { monthMatrix, monthAbbreviation, toDateString, weekdayInitials } from '../../utils/dates';
 import { DateCell } from './DateCell';
 
 /** Day deltas for arrow-key navigation within the grid. */
@@ -26,6 +27,8 @@ interface MonthGridProps {
   month: number;
   weekStartsOn: WeekStart;
   today: string;
+  /** The countdown target date; days up to and including it are highlighted. */
+  deadline: string;
   selectedDate: string | null;
   eventDates: Set<string>;
   onSelectDate: (date: Date, anchor: HTMLElement) => void;
@@ -37,6 +40,7 @@ export const MonthGrid = memo(function MonthGrid({
   month,
   weekStartsOn,
   today,
+  deadline,
   selectedDate,
   eventDates,
   onSelectDate,
@@ -73,13 +77,9 @@ export const MonthGrid = memo(function MonthGrid({
         {chunk(cells, 7).map((week, weekIndex) => (
           <div role="row" key={weekIndex} className="grid grid-cols-7">
             {week.map((date) => {
-              const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
-                2,
-                '0',
-              )}-${String(date.getDate()).padStart(2, '0')}`;
+              const dateStr = toDateString(date);
               const isCurrentMonth = date.getMonth() === month - 1;
-              const isPast = dateStr < today;
-              const isToday = dateStr === today;
+              const phase = dayPhase(dateStr, today, deadline);
               const isSelected = dateStr === selectedDate;
               return (
                 <div
@@ -90,8 +90,7 @@ export const MonthGrid = memo(function MonthGrid({
                 >
                   <DateCell
                     date={date}
-                    isToday={isToday}
-                    isPast={isPast}
+                    phase={phase}
                     isCurrentMonth={isCurrentMonth}
                     isSelected={isSelected}
                     isFocusable={dateStr === focusDate}
