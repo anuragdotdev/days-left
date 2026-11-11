@@ -1,0 +1,166 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
+    Arial, 'Noto Sans', sans-serif;
+
+  --color-bg: var(--dl-bg);
+  --color-surface: var(--dl-surface);
+  --color-surface-2: var(--dl-surface-2);
+  --color-text: var(--dl-text);
+  --color-text-2: var(--dl-text-2);
+  --color-text-3: var(--dl-text-3);
+  --color-line: var(--dl-line);
+  --color-line-soft: var(--dl-line-soft);
+  --color-accent: var(--dl-accent);
+  --color-amber: var(--dl-amber);
+  --color-done: var(--dl-done);
+  --color-danger: var(--dl-danger);
+}
+
+:root,
+:root[data-theme='dark'] {
+  --dl-bg: #000000;
+  --dl-surface: #111111;
+  --dl-surface-2: #171717;
+  --dl-text: #ffffff;
+  --dl-text-2: #999999;
+  --dl-text-3: #666666;
+  --dl-line: #262626;
+  --dl-line-soft: #1a1a1a;
+  --dl-accent: #ffffff;
+  --dl-amber: #d9a441;
+  --dl-done: #5f8f5f;
+  --dl-danger: #e05c5c;
+  color-scheme: dark;
+}
+
+:root[data-theme='light'] {
+  --dl-bg: #fafafa;
+  --dl-surface: #ffffff;
+  --dl-surface-2: #f2f2f2;
+  --dl-text: #111111;
+  --dl-text-2: #666666;
+  --dl-text-3: #999999;
+  --dl-line: #e2e2e2;
+  --dl-line-soft: #eeeeee;
+  --dl-accent: #111111;
+  --dl-amber: #b5822c;
+  --dl-done: #4a7a4a;
+  --dl-danger: #c23b3b;
+  color-scheme: light;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--dl-bg);
+  color: var(--dl-text);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/*
+  Tailwind's preflight already resets buttons and form controls inside
+  `@layer base`. These rules are deliberately unlayered, so they must not set
+  `color` or `background` — unlayered declarations outrank Tailwind's
+  `@layer utilities` and would defeat utilities like `text-text-3` and
+  `bg-accent`.
+*/
+button {
+  font: inherit;
+  cursor: pointer;
+}
+
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+:focus-visible {
+  outline: 1px solid var(--dl-accent);
+  outline-offset: 2px;
+}
+
+::selection {
+  background: var(--dl-accent);
+  color: var(--dl-bg);
+}
+
+/* Thin, unobtrusive scrollbars */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--dl-line) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--dl-line);
+  border-radius: 999px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+@keyframes dl-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes dl-fade-in-centered {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes dl-pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-fade-in {
+  animation: dl-fade-in 0.25s ease both;
+}
+
+.animate-fade-in-centered {
+  animation: dl-fade-in-centered 0.2s ease both;
+}
+
+.animate-pop-in {
+  animation: dl-pop-in 0.15s ease both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-in,
+  .animate-fade-in-centered,
+  .animate-pop-in {
+    animation: none;
+  }
+}
